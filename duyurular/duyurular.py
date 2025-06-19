@@ -4,7 +4,7 @@ import os
 
 wsdl = "https://api.ibb.gov.tr/iett/UlasimDinamikVeri/Duyurular.asmx?wsdl"
 
-hat_kodu = input("Hat Kodu Giriniz: ")
+hat_kodu = input("Hat kodu giriniz / Enter bus line code: ")
 
 try:
     client = zeep.Client(wsdl=wsdl)

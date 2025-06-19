@@ -3,7 +3,7 @@ import json
 
 wsdl = "https://api.ibb.gov.tr/iett/AracAnaVeri/AracOzellik.asmx?wsdl"
 
-date_val = input("Yil ve ay sayilarini giriniz (arada bosluk birakarak): ")
+date_val = input("Yil ve ay sayilarini giriniz (arada bosluk birakarak) / Enter year and month number (leaving space in between): ")
 date_val = date_val.split(' ')
 
 try:

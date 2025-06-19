@@ -6,8 +6,8 @@ from datetime import date, timedelta
 
 wsdl = "https://api.ibb.gov.tr/iett/ibb/ibb360.asmx?wsdl"
 
-date_val = input("Tarih giriniz (YYY-MM-DD): ")
-hat_val = input("Hat ismi giriniz (Tum hatlar icin enter'a basin): ")
+date_val = input("Tarih giriniz (YYY-MM-DD) / Enter date (YYY-MM-DD): ")
+hat_val = input("Hat ismi giriniz (Tum hatlar icin enter'a basin) / Enter bus line code (For all lines press enter): ")
 
 # parses the date value to milliseconds
 def ms_parser(line):
