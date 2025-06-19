@@ -1,5 +1,6 @@
 # IETT_API
 Bu repository, IETT WebServisleri kullanarak python dili üzerinden yazmış olduğum scriptleri içermektedir.  
+WebServisleri ve veriler [IBB Açık Veri Portalı](https://data.ibb.gov.tr/) adresinden alınmıştır.  
 Kullanım hakları ve lisansa yönelik detaylı bilgi için lisans sekmesini ziyaret edebilirsiniz.  
 
 
