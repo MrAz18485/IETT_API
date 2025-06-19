@@ -15,7 +15,7 @@ python3 source .venv/bin/activate
 ```
 3. Gerekli dependency'leri kurun  
 ```
-pip install zeep
+pip install -r requirements.txt
 ```
 4. Çalıştırmak istediğiniz dosyayı çalıştırın (Örnek)  
 ```
@@ -34,7 +34,7 @@ python3 source .venv/bin/activate
 ```
 3. Install required dependencies  
 ```
-pip install zeep
+pip install -r requirements.txt
 ```
 4. Run the script you would like to execute. (Example below)  
 ```
