@@ -12,7 +12,7 @@ python3 -m venv .venv
 ```
 2. Virtual environment'ı aktifleştirin  
 ```
-python3 source .venv/bin/activate
+source .venv/bin/activate
 ```
 3. Gerekli dependency'leri kurun  
 ```
@@ -31,7 +31,7 @@ python3 -m venv .venv
 ```
 2. Activate virtual environment  
 ```
-python3 source .venv/bin/activate
+source .venv/bin/activate
 ```
 3. Install required dependencies  
 ```
