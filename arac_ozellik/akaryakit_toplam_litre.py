@@ -8,7 +8,7 @@ date_val = date_val.split(' ')
 
 try:
     if (len(date_val) != 2):
-        raise Exception("Yanlis format")
+        raise Exception("Yanlış format / Incorrect format")
     client = zeep.Client(wsdl=wsdl)
     akaryakit_litre = client.service.GetAkarYakitToplamLitre_json(date_val[0], date_val[1])
     akaryakit_litre = json.loads(akaryakit_litre)

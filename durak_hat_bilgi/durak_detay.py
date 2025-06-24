@@ -15,6 +15,7 @@ try:
     client = zeep.Client(wsdl=wsdl)
 
     hat_kodu = special_char_upper_func(input("Hat kodu giriniz / Enter bus code: "))
+    
     if hat_kodu == "":
         raise Exception("Hat kodu boş bırakılamaz / Bus code cannot be left empty")
     
