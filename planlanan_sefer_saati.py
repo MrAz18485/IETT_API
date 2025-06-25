@@ -1,29 +1,26 @@
 from zeep import Client, Settings
 import json
 import sys
+import utils.functions
 
-wsdl = "planlanan_sefer_saati/PlanlananSeferSaati.asmx.xml"
-
-def special_char_upper_func(param):
-    special_chars = {"ğ":"Ğ", "ü":"Ü", "i":"İ", "ş":"Ş", "ö":"Ö", "ç":"Ç"}
-    for key, value in special_chars.items():
-        param = param.replace(key, value)
-    return param.upper()
+wsdl = "xml/PlanlananSeferSaati.asmx.xml"
 
 try:
     client = Client(wsdl=wsdl)
-    hat_kodu = special_char_upper_func(input("Hat kodu giriniz / Enter bus line code: "))
+    hat_kodu = utils.functions.special_char_upper_func(input("Hat kodu giriniz / Enter bus line code: "))
 
-    if hat_kodu == "":
+    if hat_kodu == "": # I am expecting a hat_kodu, so its reasonable to place exception here.
         raise Exception("Hat kodu boş bırakılamaz / Bus code cannot be left empty")
     
     sefer_saatleri = client.service.GetPlanlananSeferSaati_json(hat_kodu)
     sefer_saatleri = json.loads(sefer_saatleri)
 
     if len(sefer_saatleri) == 0:
-        raise Exception("Sefer saatleri bulunamadı / Timetable not found")
+        print("Sefer saatleri bulunamadı, hat kodu yanlış girilmiş olabilir / Timetable not found, it's possible that bus line is incorrect")
+        exit()
     
-    # problematic, since a bus line can have multiple routes, but we're displaying only the first one that appears that is fetched
+    # problematic, since a bus line can have multiple routes, but we're displaying only the first one that appears when we fetch
+    # TODO: Fix this
     print(sefer_saatleri[0]["SHATKODU"], "(", sefer_saatleri[0]["HATADI"], ")")
     direction = input("Yön giriniz (G - Gidiş, D-Dönüş, soldan sağa) / Enter direction (G - from left to right, D - from right to left): ").upper()
 

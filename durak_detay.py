@@ -1,20 +1,15 @@
 import zeep
 import lxml.etree
-import pytest
+import sys
 
-wsdl = "durak_hat_bilgi/durak_hat_bilgi.xml"
+import utils.functions
 
-# python fails to convert some of the turkish lowercase characters to their corresponding upper case pairs
-def special_char_upper_func(param):
-    special_chars = {"ğ":"Ğ", "ü":"Ü", "i":"İ", "ş":"Ş", "ö":"Ö", "ç":"Ç"}
-    for key, value in special_chars.items():
-        param = param.replace(key, value)
-    return param.upper()
+wsdl = "xml/durak_hat_bilgi.xml"
 
 try:
     client = zeep.Client(wsdl=wsdl)
 
-    hat_kodu = special_char_upper_func(input("Hat kodu giriniz / Enter bus code: "))
+    hat_kodu = utils.functions.special_char_upper_func(input("Hat kodu giriniz / Enter bus code: "))
     
     if hat_kodu == "":
         raise Exception("Hat kodu boş bırakılamaz / Bus code cannot be left empty")
@@ -47,7 +42,7 @@ try:
                 if table[1].text == direction_choice: # display only the tables that have chosen direction
                     outp_buffer.append(table)
     elif (int(choice) == 2):
-        durak_adi = special_char_upper_func(input("Durak adı giriniz / Enter stop name: "))
+        durak_adi = utils.functions.special_char_upper_func(input("Durak adı giriniz / Enter stop name: "))
         if direction_choice == "":
             for table in root:
                 if durak_adi in table[4].text:
