@@ -9,18 +9,16 @@ wsdl = "https://api.ibb.gov.tr/iett/UlasimDinamikVeri/Duyurular.asmx?wsdl"
 
 try:
     client = zeep.Client(wsdl=wsdl)
-    hat_kodu = input("Hat kodu giriniz / Enter bus line code: ")
+    hat_kodu = input("Hat kodu giriniz (tüm duyurular için boş bırakın) / Enter bus line code (leave empty for all announcments): ")
 
-    if hat_kodu == "":
-        raise Exception("Hat kodu boş bırakılamaz / Bus code cannot be left empty")
-    
-    duyurular = client.service.GetDuyurular_json(hat_kodu)
+    duyurular = client.service.GetDuyurular_json()
 
     duyurular = json.loads(duyurular)
 
     if len(duyurular) == 0:
-        raise Exception("Duyurular bulunamadı / Announcments not found")
-    
+        print("Duyurular bulunamadı / Announcments not found")
+        exit()
+
     # could make this smaller, but this is more human-readable
     with open("temp_output.txt", "w") as temp_file: # file gets automatically closed after duyurular is exhausted
         print()

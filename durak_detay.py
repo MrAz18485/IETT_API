@@ -1,5 +1,4 @@
 import zeep
-import lxml.etree
 import sys
 
 import utils.functions
@@ -14,23 +13,19 @@ try:
     if hat_kodu == "":
         raise Exception("Hat kodu boş bırakılamaz / Bus code cannot be left empty")
     
-    root = client.service.DurakDetay_GYY(hat_kodu)
+    root = client.service.DurakDetay_GYY_wYonAdi(hat_kodu)
 
     if len(root) == 0:
-        raise Exception("Hat bulunamadı / Bus line not found")
-    
+        print("Hat bulunamadı / Bus line not found")
+        exit()
+        
     print("1 - Durak listele\n2 - Durak ara")
     choice = input("Tercih giriniz / Enter choice: ")
 
     if int(choice) != 1 and int(choice) != 2:
         raise Exception("Hatalı tercih / Invalid choice")
 
-    print("G - Gidiş, D - Dönüş")
-    direction_choice = input("Yön seçiniz / Choose direction (leave blank for both): ").upper()
-    
-    if direction_choice not in {"G", "D", ""}:
-        raise Exception("Hatalı tercih / Invalid choice")
-
+    direction_choice = utils.functions.special_char_upper_func(input("Gitmek istediğiniz yönü giriniz (tüm yönler için boş bırakın) / Enter direction you would like to go (for all directions leave empty): "))
     outp_buffer = []
 
     if (int(choice) == 1):
@@ -39,17 +34,17 @@ try:
                 outp_buffer.append(table)
         else:
             for table in root:
-                if table[1].text == direction_choice: # display only the tables that have chosen direction
+                if direction_choice in table[2].text: # display only the tables that have chosen direction
                     outp_buffer.append(table)
     elif (int(choice) == 2):
         durak_adi = utils.functions.special_char_upper_func(input("Durak adı giriniz / Enter stop name: "))
         if direction_choice == "":
             for table in root:
-                if durak_adi in table[4].text:
+                if durak_adi in table[5].text:
                     outp_buffer.append(table)
         else:
             for table in root:
-                if table[1].text == direction_choice and durak_adi in table[4].text:
+                if direction_choice in table[2].text and durak_adi in table[5].text:
                     outp_buffer.append(table)
     else:
         raise Exception("Hatalı tercih / Invalid choice")
