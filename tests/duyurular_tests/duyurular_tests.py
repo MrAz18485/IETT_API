@@ -45,25 +45,25 @@ def test_file_writing_valid():
         "{'HATKODU': 'BA-2', 'HAT': 'ÇARSI-LUNAPARK', 'TIP': 'Sefer', 'GUNCELLEME_SAATI': 'Kayit Saati: 04:27', 'MESAJ': 'LUNAPARK dan Saat 22:07 de hareket etmesi planlanan seferimiz  çesitli nedenlerle yapilamayacaktir.'}",
     ]
 
-    duyurular.write_to_tempfile(mock_array, 'test_filewriting_valid_output.txt')
+    duyurular.write_to_tempfile(mock_array, "/home/lolundcmd/Desktop/IETT_API_Tools/tests/duyurular_tests/test_filewriting_valid_output.txt")
 
     result_buffer = []
     with open('/home/lolundcmd/Desktop/IETT_API_Tools/tests/duyurular_tests/test_filewriting_valid_output.txt', 'r') as file1:
         for line in file1:
             result_buffer.append(line.strip('\n'))
-    
+    # os.remove("/home/lolundcmd/Desktop/IETT_API_Tools/tests/duyurular_tests/test_filewriting_valid_output.txt")
     assert mock_array == result_buffer
 
 def test_file_writing_empty():
     mock_array = []
 
-    duyurular.write_to_tempfile([], 'test_filewriting_empty_output.txt')
+    duyurular.write_to_tempfile([], "/home/lolundcmd/Desktop/IETT_API_Tools/tests/duyurular_tests/test_filewriting_empty_output.txt")
 
     result_buffer = []
     with open('/home/lolundcmd/Desktop/IETT_API_Tools/tests/duyurular_tests/test_filewriting_empty_output.txt', 'r') as file1:
         for line in file1:
             result_buffer.append(line.strip('\n'))
-    
+    # os.remove("/home/lolundcmd/Desktop/IETT_API_Tools/tests/duyurular_tests/test_filewriting_empty_output.txt")
     assert mock_array == result_buffer
 
 
@@ -74,7 +74,7 @@ def test_reading_valid_hat():
         "{'HATKODU': '98TB', 'HAT': 'FATIH MAHALLESI - BAKIRKÖY', 'TIP': 'Günlük', 'GUNCELLEME_SAATI': 'Kayit Saati: 11:51', 'MESAJ': 'FATIH MAHALLESI DURAGINDAKI ÇALISMA NEDENIYLE ARAÇLARIMIZ PAZARYOLU DURAGINDA SEFERLERINI BITIRIP AYNI DURAKTAN SERVISE BASLAR.'}"
     ]
 
-    result = duyurular.read_from_tempfile('98TB', 'test_filewriting_valid_output.txt')
+    result = duyurular.read_from_tempfile('98TB', "/home/lolundcmd/Desktop/IETT_API_Tools/tests/duyurular_tests/test_filewriting_valid_output.txt")
 
     assert expected_result == result
 
@@ -82,14 +82,14 @@ def test_reading_valid_hat():
 def test_reading_invalid_hat():
     expected_result = []
 
-    result = duyurular.read_from_tempfile('abc', 'test_filewriting_valid_output.txt')
+    result = duyurular.read_from_tempfile('abc', "/home/lolundcmd/Desktop/IETT_API_Tools/tests/duyurular_tests/test_filewriting_valid_output.txt")
 
     assert expected_result == result
 
 def test_reading_emptyfile():
     expected_result = []
 
-    results = duyurular.read_from_tempfile('98TB','test_filewriting_empty_output.txt')
+    results = duyurular.read_from_tempfile('98TB',"/home/lolundcmd/Desktop/IETT_API_Tools/tests/duyurular_tests/test_filewriting_empty_output.txt")
 
     assert expected_result == results
 
@@ -109,3 +109,8 @@ def test_conversion_to_dict_valid2(): # basically check if string is converted t
         ["{'ab': 'c', 'de': 'f', '1': '23'}"]
     )
     assert expected_result == result
+
+
+def test_cleanup():
+    os.remove("/home/lolundcmd/Desktop/IETT_API_Tools/tests/duyurular_tests/test_filewriting_valid_output.txt")
+    os.remove("/home/lolundcmd/Desktop/IETT_API_Tools/tests/duyurular_tests/test_filewriting_empty_output.txt")
