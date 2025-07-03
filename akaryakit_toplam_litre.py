@@ -3,24 +3,50 @@ import json
 
 wsdl = "https://api.ibb.gov.tr/iett/AracAnaVeri/AracOzellik.asmx?wsdl"
 
-date_val = input("Yil ve ay sayilarini giriniz (arada bosluk birakarak) / Enter year and month number (leaving space in between): ").split(' ')
+def take_inputs():
+    date_val = input("Yil ve ay sayilarini giriniz (arada bosluk birakarak) / Enter year and month number (leaving space in between): ").split(' ')
 
-try:
-    for i in range(len(date_val)):
-        date_val[i] = int(date_val[i]) # raises exception if element is not convertable to int
-
-    if len(date_val) != 2 or isinstance(date_val[0], int) == False or isinstance(date_val[1], int) == False:
-        raise Exception("Yanlış format / Incorrect format")
+    if len(date_val) != 2 or date_val[0].isnumeric() == False or date_val[1].isnumeric() == False:
+        raise ValueError("Incorrect format")
     
+    return {"Year": date_val[0], "Month": date_val[1]}
+
+def convert_dict_strings_to_int(input_dict):
+    for key, value in input_dict.items():
+        input_dict[key] = int(value) # raises exception if element is not convertable to int
+    return input_dict
+
+def soap_call(input_dict):
     client = zeep.Client(wsdl=wsdl)
-    akaryakit_litre = client.service.GetAkarYakitToplamLitre_json(date_val[0], date_val[1])
-    akaryakit_litre = json.loads(akaryakit_litre)
-    
-    for element in akaryakit_litre:
-        print("Toplam Akaryakıt:", element["ToplamAkarYakit"], "L")
-        print("Gün:", element["Gun"])
-        print("Ay:", element["Ay"])
-        print("Yıl:", element["Yil"], "\n")
+    akaryakit_litre = client.service.GetAkarYakitToplamLitre_json(input_dict["Year"], input_dict["Month"])
+    if len(akaryakit_litre) == 2: # I don't know why it returns 2 characters
+        print("No data found / Veri bulunamadı")
+        exit()
+    return akaryakit_litre
 
-except Exception as exc:
-    print("An exception occurred:", exc)
+def convert_soap_response_to_dictionary(input_string):
+    input_string = json.loads(input_string)
+    return input_string
+
+def print_dictionary(input_array):
+    for element in input_array:
+        print(f"Toplam Akaryakıt: {element["ToplamAkarYakit"]}L")
+        print(f"Gün: {element["Gun"]}")
+        print(f"Ay: {element["Ay"]}")
+        print(f"Yıl: {element["Yil"]}\n")
+
+def main():
+    try:
+        input_dict = take_inputs()
+        formatted_input_dict = convert_dict_strings_to_int(input_dict)
+
+        soap_response = soap_call(formatted_input_dict)
+        formatted_soap_response = convert_soap_response_to_dictionary(soap_response)
+        
+        print_dictionary(formatted_soap_response)
+
+    except ValueError as val_exc:
+        print("Value error exception:", val_exc)
+
+if __name__ == "__main__":
+    main()
