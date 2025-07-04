@@ -4,35 +4,35 @@ import sys
 from lxml import etree
 sys.path.append("/home/lolundcmd/Desktop/IETT_API_Tools")
 
-import hat_servisi
+import line_service
 
 # https://docs.pytest.org/en/stable/reference/reference.html#std-fixture-capsys
 
-def test_take_hatkodu_valid_nospecialchar():
-    response = hat_servisi.take_hat_kodu("km18")
+def test_take_linecode_valid_nospecialchar():
+    response = line_service.take_line_code("km18")
     expected_response = "KM18"
     assert response == expected_response
 
-def test_take_hatkodu_valid_specialchar():
-    response = hat_servisi.take_hat_kodu("ök48")
+def test_take_linecode_valid_specialchar():
+    response = line_service.take_line_code("ök48")
     expected_response = "ÖK48"
     assert response == expected_response
 
-def test_take_hatkodu_empty():
-    response = hat_servisi.take_hat_kodu("")
+def test_take_linecode_empty():
+    response = line_service.take_line_code("")
     expected_response = ""
     assert response == expected_response
 
 def test_soap_invalid1(capsys):
     with pytest.raises(SystemExit):
-        hat_servisi.soap_call("kino_severim")
+        line_service.soap_call("kino_severim")
         captured = capsys.readouterr()
         print(captured)
         assert captured.out == "Hat bulunamadı / Bus line not found\n"
 
 def test_soap_invalid2(capsys):
     with pytest.raises(SystemExit):
-        hat_servisi.soap_call("boyle_bir_hat_yok")
+        line_service.soap_call("boyle_bir_hat_yok")
         print("this aint getting printed bro")
         captured = capsys.readouterr()
         print(captured)
@@ -54,7 +54,7 @@ def etree_constructor(tables): # helper for methods below.
 def test_print_etree_singletable(capsys):
     mock_tables = [{"AB": "C", "This_is": "Fake", "Good": "Bye"}]
     mock_etree = etree_constructor(mock_tables)
-    hat_servisi.print_etree(mock_etree)
+    line_service.print_etree(mock_etree)
     captured = capsys.readouterr()
     expected_output = str(
         "\nAB : C\n" + "This_is : Fake\n" + "Good : Bye\n" 
@@ -64,7 +64,7 @@ def test_print_etree_singletable(capsys):
 def test_print_etree_multipletable(capsys):
     mock_tables = [{"AB": "C", "This_is": "Fake", "Good": "Bye"}, {"This_is": "Table_Two"}]
     mock_etree = etree_constructor(mock_tables)
-    hat_servisi.print_etree(mock_etree)
+    line_service.print_etree(mock_etree)
     captured = capsys.readouterr()
     expected_output = str(
         "\nAB : C\n" + "This_is : Fake\n" + "Good : Bye\n" + "\nThis_is : Table_Two\n" 
@@ -74,7 +74,7 @@ def test_print_etree_multipletable(capsys):
 def test_print_etree_emptytable(capsys):
     mock_tables = [{}]
     mock_etree = etree_constructor(mock_tables)
-    hat_servisi.print_etree(mock_etree)
+    line_service.print_etree(mock_etree)
     captured = capsys.readouterr()
     expected_output = str("\n")
     assert captured.out == expected_output
