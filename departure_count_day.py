@@ -39,7 +39,7 @@ def convert_soap_response_to_list(soap_response):
 def get_data_of_specific_bus_line(bus_line_val, response_list):
     output_buffer = []
     for element in response_list:
-         if bus_line_val in element["Hat"]:
+         if isinstance(element["Hat"], str) and bus_line_val in element["Hat"]: # Don't add bus lines with bus line name "None"
              output_buffer.append(element)
 
     return output_buffer
@@ -64,7 +64,6 @@ def main():
         soap_response = soap_call(date_val)
 
         soap_response_list = convert_soap_response_to_list(soap_response)
-        print(soap_response_list)
 
         bus_data = get_data_of_specific_bus_line(bus_line_val, soap_response_list)
         
