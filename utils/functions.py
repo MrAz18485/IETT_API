@@ -11,10 +11,10 @@ def ms_parser(line):
     startidx = -1
     endidx = -1
 
-    for i in range(len(line["Gun"])):
-        if (line["Gun"][i] == '('):
+    for i in range(len(line)):
+        if (line[i] == '('):
             startidx = i
-        elif (line["Gun"][i] == ')'):
+        elif (line[i] == ')'):
             endidx = i
-    date_to_ms = int(line["Gun"][startidx+1:endidx])
+    date_to_ms = int(line[startidx+1:endidx])
     return date_to_ms

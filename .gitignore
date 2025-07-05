@@ -1,7 +1,7 @@
 under_dev/
 arsiv_gorev.py
-**.venv
+**/.venv
 temp_output.txt
 *pyc
-**__pycache__
-**.pytest_cache
+__pycache__/
+.pytest_cache/
