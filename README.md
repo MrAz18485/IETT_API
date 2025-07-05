@@ -5,7 +5,7 @@ Kullanım hakları ve lisansa yönelik detaylı bilgi için lisans sekmesini ziy
 
 
 ### Kullanım (TR)
-
+**Linux:**  
 1. Zip'i unpack'leyin, ana klasöre geçin  
 2. Virtual environment'ı oluşturun  
 ```
@@ -23,9 +23,29 @@ pip install -r utils/requirements.txt
 ```
 python3 akaryakit_toplam_litre.py
 ```
+  
+**Windows:**  
+1. Zip'i unpack'leyin, ana klasöre geçin  
+2. Virtual environment'ı oluşturun  
+```
+py -m venv .venv
+```
+3. Virtual environment'ı aktifleştirin  
+```
+.venv\Scripts\activate
+```
+4. Gerekli dependency'leri kurun  
+```
+pip install -r utils\requirements.txt
+```
+5. Çalıştırmak istediğiniz dosyayı çalıştırın (Örnek)  
+```
+py akaryakit_toplam_litre.py
+```
+
 
 ### Usage (ENG)
-
+**Linux:**  
 1. Unpack the zip file, change to main directory  
 2. Create a virtual environment  
 ```
@@ -42,4 +62,23 @@ pip install -r utils/requirements.txt
 5. Run the script you would like to execute. (Example below)  
 ```
 python3 akaryakit_toplam_litre.py
+```
+  
+**Windows:**  
+1. Unpack the zip file, change to main directory  
+2. Create a virtual environment  
+```
+py -m venv .venv
+```
+3. Activate virtual environment  
+```
+.venv\Scripts\activate
+```
+4. Install required dependencies  
+```
+pip install -r utils\requirements.txt
+```
+5. Run the script you would like to execute. (Example below)  
+```
+py akaryakit_toplam_litre.py
 ```
