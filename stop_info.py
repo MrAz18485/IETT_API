@@ -78,7 +78,6 @@ def main():
         inputs = take_inputs()
         
         root = soap_call(inputs["Line Code"], wsdl)
-        print(lxml.etree.tostring(root))
 
         outp_buffer = parse_soap_response(inputs, root)
         

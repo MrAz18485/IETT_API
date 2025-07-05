@@ -43,6 +43,7 @@ def obtain_unique_bus_line_names(soap_response_list):
     return bus_lines
 
 def print_bus_line_names(bus_lines):
+    print()
     for element in bus_lines:
         print(element)
 
@@ -65,6 +66,7 @@ def get_specific_timetables(soap_response_list, user_inputs):
     return outp_buffer
 
 def print_dictionary(specific_timetables_list):
+    print()
     for element in specific_timetables_list:
             print("Hat Kodu: ", element["SHATKODU"])
             print("Hat Adı: ", element["HATADI"])
