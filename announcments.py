@@ -28,7 +28,7 @@ def soap_response_to_list(soap_response):
 def get_specific_bus_lines_announcments(line_code, announcment_list):
     output_buffer = []
     for element in announcment_list:
-        if element["HATKODU"] == line_code:
+        if line_code in element["HATKODU"] :
             output_buffer.append(element)
     return output_buffer
 

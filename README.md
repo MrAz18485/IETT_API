@@ -24,11 +24,11 @@ source .venv/bin/activate
 ```
 4. Install required dependencies  
 ```
-pip install -r utils/requirements.txt
+pip install -r requirements.txt
 ```
 5. Run the script you would like to execute. (Example below)  
 ```
-python3 akaryakit_toplam_litre.py
+python3 departure_count_day.py
 ```
   
 **Windows:**  
@@ -43,11 +43,11 @@ py -m venv .venv
 ```
 4. Install required dependencies  
 ```
-pip install -r utils\requirements.txt
+pip install -r requirements.txt
 ```
 5. Run the script you would like to execute. (Example below)  
 ```
-py akaryakit_toplam_litre.py
+py departure_count_day.py
 ```
   
   
@@ -64,11 +64,11 @@ source .venv/bin/activate
 ```
 4. Gerekli dependency'leri kurun  
 ```
-pip install -r utils/requirements.txt
+pip install -r requirements.txt
 ```
 5. Çalıştırmak istediğiniz dosyayı çalıştırın (Örnek)  
 ```
-python3 akaryakit_toplam_litre.py
+python3 departure_count_day.py
 ```
   
 **Windows:**  
@@ -83,9 +83,9 @@ py -m venv .venv
 ```
 4. Gerekli dependency'leri kurun  
 ```
-pip install -r utils\requirements.txt
+pip install -r requirements.txt
 ```
 5. Çalıştırmak istediğiniz dosyayı çalıştırın (Örnek)  
 ```
-py akaryakit_toplam_litre.py
+py departure_count_day.py
 ```
