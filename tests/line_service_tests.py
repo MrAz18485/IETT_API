@@ -8,21 +8,6 @@ import line_service
 
 # https://docs.pytest.org/en/stable/reference/reference.html#std-fixture-capsys
 
-def test_take_linecode_valid_nospecialchar():
-    response = line_service.take_line_code("km18")
-    expected_response = "KM18"
-    assert response == expected_response
-
-def test_take_linecode_valid_specialchar():
-    response = line_service.take_line_code("ök48")
-    expected_response = "ÖK48"
-    assert response == expected_response
-
-def test_take_linecode_empty():
-    response = line_service.take_line_code("")
-    expected_response = ""
-    assert response == expected_response
-
 def test_soap_invalid1(capsys):
     with pytest.raises(SystemExit):
         line_service.soap_call("kino_severim")

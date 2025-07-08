@@ -1,3 +1,5 @@
+# Displays scheduled departure hours of given bus line on given weekdays and given direction
+
 from zeep import Client, Settings
 import json
 import sys

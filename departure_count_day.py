@@ -1,5 +1,5 @@
 # Outputs the top 50 bus lines with highest number of travels for the given date
-# If the user asks for a specific bus line, (considering it's in top 50), only that bus line is displayed instead.
+# If the user asks for a specific bus line, (considering it's in top 50), only information regarding that bus line is displayed instead.
 
 import zeep
 import json

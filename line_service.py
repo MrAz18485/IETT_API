@@ -1,3 +1,5 @@
+# Displays general information about given bus line
+
 import zeep
 import json
 import lxml.etree

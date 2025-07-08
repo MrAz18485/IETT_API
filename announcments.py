@@ -1,5 +1,4 @@
-# Otobüs hattındaki duyuruları listeler
-# Lists announcments for the specified bus line
+# Lists announcments for the given bus line
 
 import zeep
 import json

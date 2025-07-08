@@ -1,3 +1,5 @@
+# Displays total fuel consumption for given date
+
 import zeep
 import json
 

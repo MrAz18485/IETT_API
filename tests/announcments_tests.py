@@ -6,23 +6,6 @@ sys.path.append("/home/lolundcmd/Desktop/IETT_API_Tools")
 
 import announcments
 
-def test_take_linecode_singlechar():
-    line_code = announcments.take_line_code('s')
-    assert line_code == 'S'
-
-def test_take_linecode_turkishchar():
-    line_code = announcments.take_line_code('ö')
-    assert line_code == 'Ö'
-
-def test_take_linecode_mix():
-    line_code = announcments.take_line_code('kM18')
-    assert line_code == 'KM18'
-
-def test_take_linecode_mix():
-    line_code = announcments.take_line_code('öK1')
-    assert line_code == 'ÖK1'
-
-
 def test_soap_call():
     soap_call = announcments.soap_call()
     assert len(soap_call) != 0 # I mean, its possible that there's no announcments

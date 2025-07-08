@@ -57,7 +57,7 @@ def etree_constructor(tables): # helper for methods below.
     for i in range(len(tables)):
         root_elem.append(etree.Element("Table"))
     curr_table_index = 0
-    for table in tables :
+    for table in tables:
         for key, value in table.items():
             element = lxml.etree.Element(key)
             element.text = value

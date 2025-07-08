@@ -1,3 +1,6 @@
+# Displays information about stops of specified bus line
+# Supports searching for a stop of specified bus line
+
 import lxml.etree
 import zeep
 import sys
