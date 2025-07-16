@@ -3,22 +3,19 @@
 import zeep
 import json
 import os
-import utils.functions
+from utils.functions import special_char_upper_func, replace_keyword
 
 wsdl = "https://api.ibb.gov.tr/iett/UlasimDinamikVeri/Duyurular.asmx?wsdl"
 
+announcments_tag_dict = {"HATKODU": "LINE_CODE", "HAT": "LINE", "TIP": "TYPE", "GUNCELLEME_SAATI": "UPDATE_TIME", "MESAJ": "MESSAGE"}
+
 def take_line_code(line_code_input):
-    line_code = utils.functions.special_char_upper_func(line_code_input)
+    line_code = special_char_upper_func(line_code_input)
     return line_code
 
 def soap_call():
     client = zeep.Client(wsdl=wsdl)
     announcments_response = client.service.GetDuyurular_json()
-
-    if len(announcments_response) == 0:
-        print("Duyurular bulunamadı / Announcments not found")
-        exit()
-
     return announcments_response
 
 def soap_response_to_list(soap_response):
@@ -27,23 +24,29 @@ def soap_response_to_list(soap_response):
 def get_specific_bus_lines_announcments(line_code, announcment_list):
     output_buffer = []
     for element in announcment_list:
-        if line_code in element["HATKODU"] :
-            output_buffer.append(element)
+        if line_code in element["HATKODU"]:
+            updated_dict = {}
+            for key in element:
+                updated_dict[replace_keyword(key, announcments_tag_dict)] = element[key]
+            output_buffer.append(updated_dict)
+    if len(output_buffer) == 0:
+        print("Announcments not found")
+        exit()
     return output_buffer
 
 def print_elements(outp_buffer):
     print()
     for list_element in outp_buffer: 
-        print("Hat Kodu:", list_element["HATKODU"])
-        print("Hat:", list_element["HAT"])
-        print("Tip:", list_element["TIP"])
-        print("Güncelleme Saati:", list_element["GUNCELLEME_SAATI"])
-        print("Mesaj:", list_element["MESAJ"])
+        print("Line Code:", list_element["LINE_CODE"])
+        print("Line:", list_element["LINE"])
+        print("Type:", list_element["TYPE"])
+        print("Update Time:", list_element["UPDATE_TIME"])
+        print("Message:", list_element["MESSAGE"])
         print()
 
 def main():
     try:
-        hat_kodu = take_line_code(input("Hat kodu giriniz (tüm duyurular için boş bırakın) / Enter bus line code (leave empty for all announcments): "))
+        hat_kodu = take_line_code(input("Enter bus line code (leave empty for all announcments): "))
 
         duyurular_response = soap_call()
 

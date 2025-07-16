@@ -3,11 +3,13 @@ import pytest
 import os
 from lxml import etree
 import sys
+
 sys.path.append("/home/lolundcmd/Desktop/IETT_API_Tools")
 
+from utils.functions import etree_constructor
 import stop_info
 
-wsdl = "/home/lolundcmd/Desktop/IETT_API_Tools/xml/durak_hat_bilgi.xml"
+wsdl = "xml/line_service.xml"
 
 def test_take_inputs_valid():
     with open("test_take_inputs_valid.txt", "w") as file1:
@@ -16,7 +18,7 @@ def test_take_inputs_valid():
     output = stop_info.take_inputs()
     sys.stdin = sys.__stdin__
     os.remove("test_take_inputs_valid.txt")
-    assert output == {"Line Code" : "KM18", "Direction" : "KURTKÖY", "Choice" : "1", "Stop" : ""}
+    assert output == {"Line_Code" : "KM18", "Direction" : "KURTKÖY", "Choice" : "1", "Stop" : ""}
 
 def test_take_inputs_valid2():
     with open("test_take_inputs_valid2.txt", "w") as file1:
@@ -25,7 +27,7 @@ def test_take_inputs_valid2():
     output = stop_info.take_inputs()
     sys.stdin = sys.__stdin__ 
     os.remove("test_take_inputs_valid2.txt")
-    assert output == {"Line Code" : "KM18", "Direction" : "SABANCI", "Choice" : "2", "Stop" : "OTOYOL"}
+    assert output == {"Line_Code" : "KM18", "Direction" : "SABANCI", "Choice" : "2", "Stop" : "OTOYOL"}
 
 def test_take_inputs_empty_line_code() :
     with pytest.raises(ValueError):
@@ -36,7 +38,7 @@ def test_take_inputs_empty_line_code() :
     sys.stdin = sys.__stdin__
     os.remove("test_take_inputs_empty_line_code.txt")
 
-def test_take_inputs_invalid_choice_1():
+def test_take_inputs_invalid_choice():
     with pytest.raises(ValueError):
         with open("test_take_inputs_invalid_choice_1.txt", "w") as file1:
             file1.write("KM18\n\n3\n")
@@ -51,19 +53,6 @@ def test_take_inputs_invalid_choice_1():
 def test_soapcall_invalid(capsys):
     with pytest.raises(SystemExit):
         stop_info.soap_call("abc", wsdl)
-
-def etree_constructor(tables): # helper for methods below. 
-    root_elem = etree.Element("NewDataSet")
-    for i in range(len(tables)):
-        root_elem.append(etree.Element("Table"))
-    curr_table_index = 0
-    for table in tables:
-        for key, value in table.items():
-            element = lxml.etree.Element(key)
-            element.text = value
-            root_elem[curr_table_index].append(element)
-        curr_table_index += 1
-    return root_elem
 
 def test_parsesoap_response_choice1_directionempty(): # should get all elements in mock_etree
     inputs = {"Choice" : "1", "Direction" : ""}
@@ -82,19 +71,14 @@ def test_parsesoap_response_choice1_direction(): # direction is not empty now, s
     expected_result = list(mock_etree)
     assert result == expected_result
 
-def test_parsesoap_response_choice2_directionempty_invalidstop(): # stop name doesn't exist, program should exit
+def test_parsesoap_response_choice1_nonexistent_direction(): # direction is not empty now, should get all elements in mock_etree
     with pytest.raises(SystemExit):
-        inputs = {"Choice" : "2", "Direction" : "", "Stop" : "mis_adana_kebap"}
-        mock_etree = etree_constructor([{"AB" : "C", "DE" : "F", "YON_ADI" : "Kurtköy", "CART" : "curt", "as" : "df", "DURAK_ADI" : "OTOYOL_KAVSAGI"}])
-        result = stop_info.parse_soap_response(inputs, mock_etree) # you have to convert mock_etree to list
+        inputs = {"Choice" : "1", "Direction" : "s"}
+        mock_etree = etree_constructor([{"AB" : "C", "DE" : "F", "YON_ADI" : "Kurtköy", "ilikebiscuits" : "chocolate"}])
 
-def test_parsesoap_response_choice2_direction_invalidstop(): # stop name doesn't exist, program should exit
-    with pytest.raises(SystemExit):
-        inputs = {"Choice" : "2", "Direction" : "", "Stop" : "idk_where_to_go"}
-        mock_etree = etree_constructor([{"AB" : "C", "DE" : "F", "YON_ADI" : "Sabancı", "CART" : "curt", "as" : "df", "DURAK_ADI" : "OTOYOL_KAVSAGI"}])
-        result = stop_info.parse_soap_response(inputs, mock_etree) # you have to convert mock_etree to list
+        result = stop_info.parse_soap_response(inputs, mock_etree) 
 
-def test_parsesoap_response_choice2_direction():
+def test_parsesoap_response_choice2_directionempty():
     inputs = {"Choice" : "2", "Direction" : "", "Stop" : "OTOYOL_KAVSAGI"}
     mock_etree = etree_constructor([{"AB" : "C", "DE" : "F", "YON_ADI" : "Sabancı", "CART" : "curt", "as" : "df", "DURAK_ADI" : "OTOYOL_KAVSAGI"}])
     expected_result = list(mock_etree)
@@ -103,6 +87,38 @@ def test_parsesoap_response_choice2_direction():
 
     assert result == expected_result
 
+def test_parsesoap_response_choice2_directionempty_invalidstop(): # stop name doesn't exist, program should exit
+    with pytest.raises(SystemExit):
+        inputs = {"Choice" : "2", "Direction" : "", "Stop" : "mis_adana_kebap"}
+        mock_etree = etree_constructor([{"AB" : "C", "DE" : "F", "YON_ADI" : "Kurtköy", "CART" : "curt", "as" : "df", "DURAK_ADI" : "OTOYOL_KAVSAGI"}])
+        result = stop_info.parse_soap_response(inputs, mock_etree) # you have to convert mock_etree to list
+
+def test_parsesoap_response_choice2_direction_stop(): # stop name doesn't exist, program should exit
+    inputs = {"Choice" : "2", "Direction" : "Sabancı", "Stop" : "OTOYOL_KAVSAGI"}
+    mock_etree = etree_constructor([{"AB" : "C", "DE" : "F", "YON_ADI" : "Sabancı", "CART" : "curt", "as" : "df", "DURAK_ADI" : "OTOYOL_KAVSAGI"}])
+    result = stop_info.parse_soap_response(inputs, mock_etree) # you have to convert mock_etree to list
+    
+    expected_result = list(mock_etree)
+    
+    assert result == expected_result
+
+def test_parsesoap_response_choice2_direction_invalidstop(): # stop name doesn't exist, program should exit
+    with pytest.raises(SystemExit):
+        inputs = {"Choice" : "2", "Direction" : "", "Stop" : "idk_where_to_go"}
+        mock_etree = etree_constructor([{"AB" : "C", "DE" : "F", "YON_ADI" : "Sabancı", "CART" : "curt", "as" : "df", "DURAK_ADI" : "OTOYOL_KAVSAGI"}])
+        result = stop_info.parse_soap_response(inputs, mock_etree) # you have to convert mock_etree to list
+
+def test_parsesoap_response_choice2_invalid_direction_stop(): # stop name doesn't exist, program should exit
+    with pytest.raises(SystemExit):
+        inputs = {"Choice" : "2", "Direction" : "abc", "Stop" : "OTOYOL_KAVSAGI"}
+        mock_etree = etree_constructor([{"AB" : "C", "DE" : "F", "YON_ADI" : "Sabancı", "CART" : "curt", "as" : "df", "DURAK_ADI" : "OTOYOL_KAVSAGI"}])
+        result = stop_info.parse_soap_response(inputs, mock_etree) # you have to convert mock_etree to list
+
+def test_parsesoap_response_choice2_invalid_direction_invalid_stop(): # stop name doesn't exist, program should exit
+    with pytest.raises(SystemExit):
+        inputs = {"Choice" : "2", "Direction" : "abc", "Stop" : "abc"}
+        mock_etree = etree_constructor([{"AB" : "C", "DE" : "F", "YON_ADI" : "Sabancı", "CART" : "curt", "as" : "df", "DURAK_ADI" : "OTOYOL_KAVSAGI"}])
+        result = stop_info.parse_soap_response(inputs, mock_etree) # you have to convert mock_etree to list
 
 def test_parsesoap_response_invalidchoice(): # invalid choice, should raise a ValueError exception
     with pytest.raises(ValueError):
@@ -110,85 +126,91 @@ def test_parsesoap_response_invalidchoice(): # invalid choice, should raise a Va
         mock_etree = etree_constructor([{"AB" : "C", "DE" : "F", "YON_ADI" : "Sabancı", "CART" : "curt", "as" : "df", "DURAK_ADI" : "OTOYOL_KAVSAGI"}])
         result = stop_info.parse_soap_response(inputs, mock_etree) # you have to convert mock_etree to list
 
-def test_printxmltree_tables_valid1(capsys):
-    input = etree_constructor([
-    {
-                "HATKODU" : "KM18",
-                "YON" : "D",
-                "YON_ADI" : "SABANCI ÜNİVERSİTESİ",
-                "SIRANO" :"1",
-                "DURAKKODU" : "289821",
-                "DURAKADI" : "KURTKÖY MAHALLESİ METRO",
-                "XKOORDINATI" : "29.295970",
-                "YKOORDINATI" : "40.909935",
-                "DURAKTIPI" : "İETTBAYRAK",
-                "ISLETMEBOLGE" : "Anadolu2",
-                "ISLETMEALTBOLGE" : "Pendik",
+def test_print_stops_single_element_input(capsys):
+    input = [
+        {
+                "LINE_CODE" : "KM18",
+                "DIRECTION" : "D",
+                "DIRECTION_NAME" : "SABANCI ÜNİVERSİTESİ",
+                "QUEUE_NUMBER" :"1",
+                "STOP_CODE" : "289821",
+                "STOP_NAME" : "KURTKÖY MAHALLESİ METRO",
+                "X_COORDINATE" : "29.295970",
+                "Y_COORDINATE" : "40.909935",
+                "STOP_TYPE" : "İETTBAYRAK",
+                "SERVICE_REGION" : "Anadolu2",
+                "SERVICE_SUB_REGION" : "Pendik",
                 "ILCEADI" : "Pendik"
-    }
-    ])  
+        }
+    ]  
 
-    stop_info.print_xml_tree_tables(input)
+    stop_info.print_stops(input)
     captured = capsys.readouterr()
 
     expected_output = str(
-            "\nHATKODU : KM18\n" + 
-            "YON : D\n" +
-            "YON_ADI : SABANCI ÜNİVERSİTESİ\n" +
-            "SIRANO : 1\n" +
-            "DURAKKODU : 289821\n" + 
-            "DURAKADI : KURTKÖY MAHALLESİ METRO\n"+ 
-            "XKOORDINATI : 29.295970\n" +
-            "YKOORDINATI : 40.909935\n" +
-            "DURAKTIPI : İETTBAYRAK\n" +
-            "ISLETMEBOLGE : Anadolu2\n" +
-            "ISLETMEALTBOLGE : Pendik\n" +
-            "ILCEADI : Pendik\n\n"
+            "\nLINE_CODE: KM18\n" + 
+            "DIRECTION: D\n" +
+            "DIRECTION_NAME: SABANCI ÜNİVERSİTESİ\n" +
+            "QUEUE_NUMBER: 1\n" +
+            "STOP_CODE: 289821\n" + 
+            "STOP_NAME: KURTKÖY MAHALLESİ METRO\n"+ 
+            "X_COORDINATE: 29.295970\n" +
+            "Y_COORDINATE: 40.909935\n" +
+            "STOP_TYPE: İETTBAYRAK\n" +
+            "SERVICE_REGION: Anadolu2\n" +
+            "SERVICE_SUB_REGION: Pendik\n" +
+            "ILCEADI: Pendik\n\n"
     )
     assert captured.out == expected_output
 
-def test_printxmltree_tables_valid2(capsys):
-    input = etree_constructor([
+def test_print_stops_multiple_element_input(capsys):
+    input = [
     {
-        "HATKODU" : "KM18",
-        "YON" : "D",
-        "YON_ADI" : "SABANCI ÜNİVERSİTESİ",
-        "SIRANO" :"1",
-        "DURAKKODU" : "289821",
-        "DURAKADI" : "KURTKÖY MAHALLESİ METRO",
+        "LINE_CODE" : "KM18",
+        "DIRECTION" : "D",
+        "DIRECTION_NAME" : "SABANCI ÜNİVERSİTESİ",
+        "QUEUE_NUMBER" :"1",
+        "STOP_CODE" : "289821",
+        "STOP_NAME" : "KURTKÖY MAHALLESİ METRO",
     },   
     {                
-    "HATKODU" : "KM18",
-    "YON" : "D",
-    "YON_ADI" : "SABANCI ÜNİVERSİTESİ",
-    "SIRANO" : "2",
-    "DURAKKODU" : "263191",
-    "DURAKADI" : "ENSAR CADDESİ GİRİŞİ",
-    }])
+    "LINE_CODE" : "KM18",
+    "DIRECTION" : "D",
+    "DIRECTION_NAME" : "SABANCI ÜNİVERSİTESİ",
+    "QUEUE_NUMBER" : "2",
+    "STOP_CODE" : "263191",
+    "STOP_NAME" : "ENSAR CADDESİ GİRİŞİ",
+    }]
     
-    stop_info.print_xml_tree_tables(input)
+    stop_info.print_stops(input)
     captured = capsys.readouterr()
     
     expected_output = str(
-            "\nHATKODU : KM18\nYON : D\n" +
-            "YON_ADI : SABANCI ÜNİVERSİTESİ\n" +
-            "SIRANO : 1\n" + 
-            "DURAKKODU : 289821\n" + 
-            "DURAKADI : KURTKÖY MAHALLESİ METRO\n\n" +
-            "HATKODU : KM18\n" + 
-            "YON : D\n" + 
-            "YON_ADI : SABANCI ÜNİVERSİTESİ\n" +
-            "SIRANO : 2\n" +
-            "DURAKKODU : 263191\n" +
-            "DURAKADI : ENSAR CADDESİ GİRİŞİ\n\n"
+            "\nLINE_CODE: KM18\n" +
+            "DIRECTION: D\n" +
+            "DIRECTION_NAME: SABANCI ÜNİVERSİTESİ\n" +
+            "QUEUE_NUMBER: 1\n" + 
+            "STOP_CODE: 289821\n" + 
+            "STOP_NAME: KURTKÖY MAHALLESİ METRO\n\n" +
+            "LINE_CODE: KM18\n" + 
+            "DIRECTION: D\n" + 
+            "DIRECTION_NAME: SABANCI ÜNİVERSİTESİ\n" +
+            "QUEUE_NUMBER: 2\n" +
+            "STOP_CODE: 263191\n" +
+            "STOP_NAME: ENSAR CADDESİ GİRİŞİ\n\n"
     )
     assert captured.out == expected_output
 
-def test_printxmltree_tables_empty(capsys): # shouldn't print anything
-    input = lxml.etree.Element("abc")
+def test_print_stops_empty(capsys): # shouldn't print anything
+    input = []
     
-    stop_info.print_xml_tree_tables(input)
+    stop_info.print_stops(input)
     captured = capsys.readouterr()
     
     expected_output = str("\n")
     assert captured.out == expected_output
+
+def test_print_stops_invalid_input(capsys): # should raise exception
+    with pytest.raises(AttributeError) as exc:
+        input = ["abc"] # no items() method
+        stop_info.print_stops(input)

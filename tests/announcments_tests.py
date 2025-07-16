@@ -2,6 +2,7 @@ import pytest
 import os
 import sys
 import json
+
 sys.path.append("/home/lolundcmd/Desktop/IETT_API_Tools")
 
 import announcments
@@ -40,7 +41,7 @@ def test_get_specific_bus_lines_announcments_busline_exists_single_element_respo
     input = ["1", [{"HATKODU": "1", "HAT": "NA", "MESAJ": "TestMessage1"}, {"HATKODU": "2", "HAT": "NA", "MESAJ": "TestMessage3"}]]
     result = announcments.get_specific_bus_lines_announcments(input[0], input[1])
 
-    expected_result = [{"HATKODU": "1", "HAT": "NA", "MESAJ": "TestMessage1"}]
+    expected_result = [{"LINE_CODE": "1", "LINE": "NA", "MESSAGE": "TestMessage1"}]
     
     assert result == expected_result
 
@@ -48,61 +49,61 @@ def test_get_specific_bus_lines_announcments_busline_exists_multiple_element_res
     input = ["1", [{"HATKODU": "1", "HAT": "NA", "MESAJ": "TestMessage1"}, {"HATKODU": "1", "HAT": "NA", "MESAJ": "TestMessage2"}, {"HATKODU": "2", "HAT": "NA", "MESAJ": "TestMessage3"}]]
     result = announcments.get_specific_bus_lines_announcments(input[0], input[1])
 
-    expected_result = [{"HATKODU": "1", "HAT": "NA", "MESAJ": "TestMessage1"}, {"HATKODU": "1", "HAT": "NA", "MESAJ": "TestMessage2"}]
+    expected_result = [{"LINE_CODE": "1", "LINE": "NA", "MESSAGE": "TestMessage1"}, {"LINE_CODE": "1", "LINE": "NA", "MESSAGE": "TestMessage2"}]
     
     assert result == expected_result
 
-def test_get_specific_bus_lines_announcments_busline_exists_invalid_busline():
-    input = ["3", [{"HATKODU": "1", "HAT": "NA", "MESAJ": "TestMessage1"}, {"HATKODU": "1", "HAT": "NA", "MESAJ": "TestMessage2"}, {"HATKODU": "2", "HAT": "NA", "MESAJ": "TestMessage3"}]]
-    result = announcments.get_specific_bus_lines_announcments(input[0], input[1])
-
-    expected_result = []
-    
-    assert result == expected_result
+def test_get_specific_bus_lines_announcments_busline_exists_invalid_busline(capsys):
+    with pytest.raises(SystemExit):
+        input = ["3", [{"HATKODU": "1", "HAT": "NA", "MESAJ": "TestMessage1"}, {"HATKODU": "1", "HAT": "NA", "MESAJ": "TestMessage2"}, {"HATKODU": "2", "HAT": "NA", "MESAJ": "TestMessage3"}]]
+        result = announcments.get_specific_bus_lines_announcments(input[0], input[1])
+    captured = capsys.readouterr()
+    expected_result = "Announcments not found\n"
+    assert captured.out == expected_result
 
 
 def test_print_elements_single_element_input(capsys):
     input = [
-        {"HATKODU": "93M", "HAT": "ZEYTINBURNU - MECIDIYEKÖY", "TIP": "Günlük", "GUNCELLEME_SAATI": "Kayit Saati: 12:01", "MESAJ": "mock"}
+        {"LINE_CODE": "93M", "LINE": "ZEYTINBURNU - MECIDIYEKÖY", "TYPE": "Günlük", "UPDATE_TIME": "Kayit Saati: 12:01", "MESSAGE": "mock"}
     ]
     announcments.print_elements(input)
     captured = capsys.readouterr()
     assert captured.out == str(
         "\n" +
-        "Hat Kodu: 93M\n" +
-        "Hat: ZEYTINBURNU - MECIDIYEKÖY\n" +
-        "Tip: Günlük\n" + 
-        "Güncelleme Saati: Kayit Saati: 12:01\n" +
-        "Mesaj: mock\n\n"
+        "Line Code: 93M\n" +
+        "Line: ZEYTINBURNU - MECIDIYEKÖY\n" +
+        "Type: Günlük\n" + 
+        "Update Time: Kayit Saati: 12:01\n" +
+        "Message: mock\n\n"
     )
 
 def test_print_elements_multiple_element_input(capsys):
     input = [
-        {"HATKODU": "93M", "HAT": "ZEYTINBURNU - MECIDIYEKÖY", "TIP": "Günlük", "GUNCELLEME_SAATI": "Kayit Saati: 12:01", "MESAJ": "mock"},
-        {'HATKODU': '93T', 'HAT': 'ZEYTINBURNU - TAKSIM', 'TIP': 'Günlük', 'GUNCELLEME_SAATI': 'Kayit Saati: 12:01', 'MESAJ': ''},
-        {'HATKODU': '97GE', 'HAT': '15 TEMMUZ MAHALLESI - EMINÖNÜ', 'TIP': 'Sefer', 'GUNCELLEME_SAATI': 'Kayit Saati: 04:27', 'MESAJ': 'nock'},
+        {"LINE_CODE": "93M", "LINE": "ZEYTINBURNU - MECIDIYEKÖY", "TYPE": "Günlük", "UPDATE_TIME": "Kayit Saati: 12:01", "MESSAGE": "mock"},
+        {'LINE_CODE': '93T', 'LINE': 'ZEYTINBURNU - TAKSIM', 'TYPE': 'Günlük', 'UPDATE_TIME': 'Kayit Saati: 12:01', 'MESSAGE': ''},
+        {'LINE_CODE': '97GE', 'LINE': '15 TEMMUZ MAHALLESI - EMINÖNÜ', 'TYPE': 'Sefer', 'UPDATE_TIME': 'Kayit Saati: 04:27', 'MESSAGE': 'nock'},
     ]
     announcments.print_elements(input)
     captured = capsys.readouterr()
     assert captured.out == str(
         "\n" +
-        "Hat Kodu: 93M\n" +
-        "Hat: ZEYTINBURNU - MECIDIYEKÖY\n" +
-        "Tip: Günlük\n" + 
-        "Güncelleme Saati: Kayit Saati: 12:01\n" +
-        "Mesaj: mock\n\n" +
+        "Line Code: 93M\n" +
+        "Line: ZEYTINBURNU - MECIDIYEKÖY\n" +
+        "Type: Günlük\n" + 
+        "Update Time: Kayit Saati: 12:01\n" +
+        "Message: mock\n\n" +
 
-        "Hat Kodu: 93T\n" +
-        "Hat: ZEYTINBURNU - TAKSIM\n" +
-        "Tip: Günlük\n" + 
-        "Güncelleme Saati: Kayit Saati: 12:01\n" +
-        "Mesaj: \n\n" +
+        "Line Code: 93T\n" +
+        "Line: ZEYTINBURNU - TAKSIM\n" +
+        "Type: Günlük\n" + 
+        "Update Time: Kayit Saati: 12:01\n" +
+        "Message: \n\n" +
 
-        "Hat Kodu: 97GE\n" +
-        "Hat: 15 TEMMUZ MAHALLESI - EMINÖNÜ\n" +
-        "Tip: Sefer\n" + 
-        "Güncelleme Saati: Kayit Saati: 04:27\n" +
-        "Mesaj: nock\n\n"
+        "Line Code: 97GE\n" +
+        "Line: 15 TEMMUZ MAHALLESI - EMINÖNÜ\n" +
+        "Type: Sefer\n" + 
+        "Update Time: Kayit Saati: 04:27\n" +
+        "Message: nock\n\n"
     )
 
 def test_print_elements_empty_input(capsys):

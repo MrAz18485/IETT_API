@@ -4,9 +4,12 @@
 import zeep
 import json
 from datetime import date, timedelta
-import utils.functions
+from utils.functions import ms_parser, special_char_upper_func, replace_keyword
+import timeit
 
 wsdl = "https://api.ibb.gov.tr/iett/ibb/ibb360.asmx?wsdl"
+
+departure_tag_dict = {"Gun": "DAY", "Hat": "LINE", "Yolculuk": "PASSENGERS"}
 
 # Converts ms to date by adding ms_input to epoch date (1970-01-01) 
 def ms_to_date_converter(ms_input):
@@ -40,26 +43,29 @@ def get_data_of_specific_bus_line(bus_line_val, response_list):
     output_buffer = []
     for element in response_list:
          if isinstance(element["Hat"], str) and bus_line_val in element["Hat"]: # Don't add bus lines with bus line name "None"
-             output_buffer.append(element)
-
+            updated_dict = {}
+            # Basically, changes the key of a value in dictionary based on departure_tag_dict
+            for key in element:
+                updated_dict[replace_keyword(key, departure_tag_dict)] = element[key] # set element[new_key] = element[old_key]
+            output_buffer.append(updated_dict)
     return output_buffer
 
 def print_elements(buffer):
     print()
     for element in buffer:
-        date_to_ms = utils.functions.ms_parser(element["Gun"])
+        date_to_ms = ms_parser(element["DAY"])
         curr_date_conversion = ms_to_date_converter(date_to_ms) 
-        print(f"Gün: {curr_date_conversion}")
-        print(f"Hat: {element["Hat"]}")
-        print(f"Yolculuk: {element["Yolculuk"]}\n")
+        print(f"Day: {curr_date_conversion}")
+        print(f"Line: {element["LINE"]}")
+        print(f"Passengers: {element["PASSENGERS"]}\n")
 
 def main():
     try:
-        date_val = input("Tarih giriniz (YYY-MM-DD) / Enter date (YYY-MM-DD): ")
+        date_val = input("Enter date (YYY-MM-DD): ")
 
         validate_inputs(date_val)
 
-        bus_line_val = utils.functions.special_char_upper_func(input("Hat ismi giriniz (Tum hatlar icin enter'a basin) / Enter bus line code (For all lines press enter): "))
+        bus_line_val = special_char_upper_func(input("Enter bus line code (For all lines press enter): "))
 
         soap_response = soap_call(date_val)
 
@@ -68,12 +74,14 @@ def main():
         bus_data = get_data_of_specific_bus_line(bus_line_val, soap_response_list)
         
         if len(bus_data) == 0:
-            print("Belirlenen hat için yolculuk sayısı bulunamadı / Number of trips not found for the specified bus line")
+            print("Number of departures not found for the specified bus line")
             exit()
 
         print_elements(bus_data)
     except ValueError as val_exc:
-        print("ValueError exception:", val_exc)
+        print(f"ValueError exception: {val_exc}")
+    except KeyError as key_exc:
+        print(f"KeyError exception: {key_exc}")
 
 if __name__ == "__main__":
     main()

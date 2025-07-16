@@ -5,3 +5,5 @@ temp_output.txt
 *pyc
 __pycache__/
 .pytest_cache/
+TODO.txt
+get_crash_info.py

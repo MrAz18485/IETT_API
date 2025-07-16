@@ -52,48 +52,6 @@ def test_soap_call_date_with_no_data(capsys):
     expected_message = "No data found\n"
     assert captured.out == expected_message
 
-
-def etree_constructor(tables): # helper for test_parse_xml. 
-    root_elem = lxml.etree.Element("NewDataSet")
-    for i in range(len(tables)):
-        root_elem.append(lxml.etree.Element("Table"))
-    curr_table_index = 0
-    for table in tables:
-        for key, value in table.items():
-            element = lxml.etree.Element(key)
-            element.text = value
-            root_elem[curr_table_index].append(element)
-        curr_table_index += 1
-    return root_elem
-
-def test_parse_xml_single_element_tree():
-    input = etree_constructor([{"AB": "C", "D":"EF"}])
-    output = archive.parse_xml(input)
-    
-    expected_output = [{"AB": "C", "D": "EF"}]
-    assert output == expected_output
-
-def test_parse_xml_multiple_element_tree():
-    input = etree_constructor([{"AB": "C", "D":"EF"}, {"HATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}])
-    output = archive.parse_xml(input)
-    
-    expected_output = [{"AB": "C", "D":"EF"}, {"HATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}]
-    assert output == expected_output
-
-def test_parse_xml_empty_tree():
-    input = etree_constructor([])
-    output = archive.parse_xml(input)
-
-    expected_output = []
-    assert output == expected_output
-
-def test_parse_xml_invalid_input():
-    with pytest.raises(TypeError) as type_exc:
-        output = archive.parse_xml(["abc", "def"])
-    expected_exception_message_header = "Invalid type <class 'str'> passed to parse_xml function"
-    assert expected_exception_message_header == type_exc.value.args[0]
-
-
 def test_get_specific_bus_line_data_no_element_empty_buslinecode():
     input = ([], "")
     output = archive.get_specific_bus_line_data(input[0], input[1])
@@ -107,54 +65,54 @@ def test_get_specific_bus_line_data_no_element_nonempty_buslinecode():
     assert output == expected_output
 
 def test_get_specific_bus_line_data_single_element_empty_buslinecode():
-    input = ([{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}], "")
+    input = ([{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}], "")
     output = archive.get_specific_bus_line_data(input[0], input[1])
-    expected_output = [{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}]
+    expected_output = [{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}]
     assert output == expected_output
 
 def test_get_specific_bus_line_data_single_element_existing_buslinecode():
-    input = ([{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}], "KM18")
+    input = ([{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}], "KM18")
     output = archive.get_specific_bus_line_data(input[0], input[1])
-    expected_output = [{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}]
+    expected_output = [{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}]
     assert output == expected_output
 
 def test_get_specific_bus_line_data_single_element_nonexistent_buslinecode():
-    input = ([{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}], "abc")
+    input = ([{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}], "abc")
     output = archive.get_specific_bus_line_data(input[0], input[1])
     expected_output = []
     assert output == expected_output
 
 def test_get_specific_bus_line_data_multiple_element_empty_buslinecode_multiple_element_output_case():
-    input = ([{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}, 
-              {"SHATKODU": "16D", "HATADI": "ALTKAYNARCA / PENDİK - KADIKÖY"}], "")
+    input = ([{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}, 
+              {"LINE_CODE": "16D", "LINE_NAME": "ALTKAYNARCA / PENDİK - KADIKÖY"}], "")
     output = archive.get_specific_bus_line_data(input[0], input[1])
-    expected_output = [{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}, 
-              {"SHATKODU": "16D", "HATADI": "ALTKAYNARCA / PENDİK - KADIKÖY"}]
+    expected_output = [{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}, 
+              {"LINE_CODE": "16D", "LINE_NAME": "ALTKAYNARCA / PENDİK - KADIKÖY"}]
     assert output == expected_output
 
 def test_get_specific_bus_line_data_multiple_element_existing_buslinecode_single_element_output_case():
-    input = ([{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}, 
-              {"SHATKODU": "16D", "HATADI": "ALTKAYNARCA / PENDİK - KADIKÖY"},
-              {"SHATKODU": "133AK", "HATADI": "TEPEÖREN - KARTAL"}], "133AK")
+    input = ([{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}, 
+              {"LINE_CODE": "16D", "LINE_NAME": "ALTKAYNARCA / PENDİK - KADIKÖY"},
+              {"LINE_CODE": "133AK", "LINE_NAME": "TEPEÖREN - KARTAL"}], "133AK")
     output = archive.get_specific_bus_line_data(input[0], input[1])
-    expected_output = [{"SHATKODU": "133AK", "HATADI": "TEPEÖREN - KARTAL"}]
+    expected_output = [{"LINE_CODE": "133AK", "LINE_NAME": "TEPEÖREN - KARTAL"}]
     assert output == expected_output
 
 def test_get_specific_bus_line_data_multiple_element_existing_buslinecode_multiple_element_output_case():
-    input = ([{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}, 
-              {"SHATKODU": "16D", "HATADI": "ALTKAYNARCA / PENDİK - KADIKÖY"},
-              {"SHATKODU": "133AK", "HATADI": "TEPEÖREN - KARTAL"},
-              {"SHATKODU": "133AK", "HATADI": "TEPEÖREN - KARTAL"},
-              {"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}], "KM18")
+    input = ([{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}, 
+              {"LINE_CODE": "16D", "LINE_NAME": "ALTKAYNARCA / PENDİK - KADIKÖY"},
+              {"LINE_CODE": "133AK", "LINE_NAME": "TEPEÖREN - KARTAL"},
+              {"LINE_CODE": "133AK", "LINE_NAME": "TEPEÖREN - KARTAL"},
+              {"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}], "KM18")
     output = archive.get_specific_bus_line_data(input[0], input[1])
-    expected_output = [{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"},
-                       {"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}]
+    expected_output = [{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"},
+                       {"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}]
     assert output == expected_output
 
 def test_get_specific_bus_line_data_multiple_element_nonexistent_buslinecode():
-    input = ([{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}, 
-              {"SHATKODU": "16D", "HATADI": "ALTKAYNARCA / PENDİK - KADIKÖY"},
-              {"SHATKODU": "133AK", "HATADI": "TEPEÖREN - KARTAL"}], "defg")
+    input = ([{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}, 
+              {"LINE_CODE": "16D", "LINE_NAME": "ALTKAYNARCA / PENDİK - KADIKÖY"},
+              {"LINE_CODE": "133AK", "LINE_NAME": "TEPEÖREN - KARTAL"}], "defg")
     output = archive.get_specific_bus_line_data(input[0], input[1])
     expected_output = []
     assert output == expected_output
@@ -168,27 +126,27 @@ def test_print_elements_empty_input(capsys):
     assert captured.out == expected_output
 
 def test_print_elements_single_element_input(capsys):
-    input = [{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}]
+    input = [{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}]
     archive.print_elements(input)
     captured = capsys.readouterr()
     expected_output = str(
-        "\nSHATKODU: KM18\n" +
-        "HATADI: SABANCI ÜNİ - KURTKÖY METRO\n\n"
+        "\nLINE_CODE: KM18\n" +
+        "LINE_NAME: SABANCI ÜNİ - KURTKÖY METRO\n\n"
     )
     assert captured.out == expected_output
 
 def test_print_elements_multiple_element_input(capsys):
-    input = [{"SHATKODU": "KM18", "HATADI": "SABANCI ÜNİ - KURTKÖY METRO"}, 
-              {"SHATKODU": "16D", "HATADI": "ALTKAYNARCA / PENDİK - KADIKÖY"},
-              {"SHATKODU": "133AK", "HATADI": "TEPEÖREN - KARTAL"}]
+    input = [{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ - KURTKÖY METRO"}, 
+              {"LINE_CODE": "16D", "LINE_NAME": "ALTKAYNARCA / PENDİK - KADIKÖY"},
+              {"LINE_CODE": "133AK", "LINE_NAME": "TEPEÖREN - KARTAL"}]
     archive.print_elements(input)
     captured = capsys.readouterr()
     expected_output = str(
-        "\nSHATKODU: KM18\n" +
-        "HATADI: SABANCI ÜNİ - KURTKÖY METRO\n\n" +
-        "SHATKODU: 16D\n" +
-        "HATADI: ALTKAYNARCA / PENDİK - KADIKÖY\n\n" +
-        "SHATKODU: 133AK\n" +
-        "HATADI: TEPEÖREN - KARTAL\n\n" 
+        "\nLINE_CODE: KM18\n" +
+        "LINE_NAME: SABANCI ÜNİ - KURTKÖY METRO\n\n" +
+        "LINE_CODE: 16D\n" +
+        "LINE_NAME: ALTKAYNARCA / PENDİK - KADIKÖY\n\n" +
+        "LINE_CODE: 133AK\n" +
+        "LINE_NAME: TEPEÖREN - KARTAL\n\n" 
     )
     assert captured.out == expected_output

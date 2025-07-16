@@ -105,7 +105,7 @@ def test_soap_call_incorrect_date(capsys):
         input_dict = {"Year": 2020, "Month": 15}
         output = total_fuel_consumption.soap_call(input_dict)
     captured = capsys.readouterr()
-    assert captured.out == "No data found / Veri bulunamadı\n" # Yes it exited, but with what message? It must be this message
+    assert captured.out == "No data found\n" # Yes it exited, but with what message? It must be this message
 
 def test_convert_to_dictionary_valid():
     input = '[{"ToplamAkarYakit":2043555.95,"Gun":2,"Ay":5,"Yil":2025}, {"ToplamAkarYakit":288769.82,"Gun":3,"Ay":5,"Yil":2025}]'
@@ -121,36 +121,36 @@ def test_convert_to_dictionary_empty():
 
 def test_print_dictionary_single_line(capsys):
     input = [
-        {"ToplamAkarYakit": 10, "Gun": 10, "Ay": 10, "Yil": 2023}
+        {"Total_Fuel": 10, "Day": 10, "Month": 10, "Year": 2023}
     ]
     total_fuel_consumption.print_dictionary(input)
     captured = capsys.readouterr()
 
     expected_output = str(
-        "Toplam Akaryakıt: 10L\n" +
-        "Gün: 10\n" + 
-        "Ay: 10\n" +
-        "Yıl: 2023\n\n" 
+        "Total_Fuel: 10L\n" +
+        "Day: 10\n" + 
+        "Month: 10\n" +
+        "Year: 2023\n\n" 
     )
     assert captured.out == expected_output
 
 def test_print_dictionary_multiple_line(capsys):
     input = [
-        {"ToplamAkarYakit": 10, "Gun": 10, "Ay": 10, "Yil": 2023},
-        {"ToplamAkarYakit": 20, "Gun": 11, "Ay": 10, "Yil": 2023}
+        {"Total_Fuel": 10, "Day": 10, "Month": 10, "Year": 2023},
+        {"Total_Fuel": 20, "Day": 11, "Month": 10, "Year": 2023}
     ]
     total_fuel_consumption.print_dictionary(input)
     captured = capsys.readouterr()
 
     expected_output = str(
-        "Toplam Akaryakıt: 10L\n" +
-        "Gün: 10\n" + 
-        "Ay: 10\n" +
-        "Yıl: 2023\n\n" +
-        "Toplam Akaryakıt: 20L\n" +
-        "Gün: 11\n" + 
-        "Ay: 10\n" +
-        "Yıl: 2023\n\n" 
+        "Total_Fuel: 10L\n" +
+        "Day: 10\n" + 
+        "Month: 10\n" +
+        "Year: 2023\n\n" +
+        "Total_Fuel: 20L\n" +
+        "Day: 11\n" + 
+        "Month: 10\n" +
+        "Year: 2023\n\n" 
     )
     assert captured.out == expected_output
 

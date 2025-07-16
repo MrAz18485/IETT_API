@@ -5,6 +5,8 @@ import zeep
 from datetime import date
 from lxml import etree
 import zeep.exceptions
+import timeit
+
 sys.path.append("/home/lolundcmd/Desktop/IETT_API_Tools")
 
 import departure_count_day
@@ -168,7 +170,7 @@ def test_get_data_of_specific_bus_line_valid():
     input = ("KM18", response_list)
     output = departure_count_day.get_data_of_specific_bus_line(input[0], input[1])
 
-    expected_output = [{"Gun":"\\/Date(1748811600000)\\/","Hat":"KM18","Yolculuk":"150"}]
+    expected_output = [{"DAY":"\\/Date(1748811600000)\\/","LINE":"KM18","PASSENGERS":"150"}]
     
     assert output == expected_output
 
@@ -208,57 +210,57 @@ def test_get_data_of_specific_bus_line_busline_is_empty():
     output = departure_count_day.get_data_of_specific_bus_line(input[0], input[1])
 
     expected_output = [
-        {"Gun":"\\/Date(1748811600000)\\/","Hat":"34","Yolculuk":"687300"},
-        {"Gun":"\\/Date(1748811600000)\\/","Hat":"34A","Yolculuk":"126385"},
-        {"Gun":"\\/Date(1748811600000)\\/","Hat":"500T","Yolculuk":"31175"},
-        {"Gun":"\\/Date(1748811600000)\\/","Hat":"null","Yolculuk":"30093"},
+        {"DAY":"\\/Date(1748811600000)\\/","LINE":"34","PASSENGERS":"687300"},
+        {"DAY":"\\/Date(1748811600000)\\/","LINE":"34A","PASSENGERS":"126385"},
+        {"DAY":"\\/Date(1748811600000)\\/","LINE":"500T","PASSENGERS":"31175"},
+        {"DAY":"\\/Date(1748811600000)\\/","LINE":"null","PASSENGERS":"30093"},
     ]
     
     assert output == expected_output
 
 def test_print_elements_single_element(capsys):
     input = [
-        {"Gun":"\\/Date(1748811600000)\\/","Hat":"34","Yolculuk":"687300"}
+        {"DAY":"\\/Date(1748811600000)\\/","LINE":"34","PASSENGERS":"687300"}
     ]
 
     departure_count_day.print_elements(input)
     captured = capsys.readouterr()
 
     expected_output = str(
-        "\nGün: 2025-06-02\n" +
-        "Hat: 34\n" + 
-        "Yolculuk: 687300\n\n"
+        "\nDay: 2025-06-02\n" +
+        "Line: 34\n" + 
+        "Passengers: 687300\n\n"
     )
 
     assert captured.out == expected_output
 
 def test_print_elements_multiple_element(capsys):
     input = [
-        {"Gun":"\\/Date(1748811600000)\\/","Hat":"34","Yolculuk":"687300"},
-        {"Gun":"\\/Date(1748811600000)\\/","Hat":"34A","Yolculuk":"126385"},
-        {"Gun":"\\/Date(1748811600000)\\/","Hat":"500T","Yolculuk":"31175"},
-        {"Gun":"\\/Date(1748811600000)\\/","Hat":"null","Yolculuk":"30093"},
+        {"DAY":"\\/Date(1748811600000)\\/","LINE":"34","PASSENGERS":"687300"},
+        {"DAY":"\\/Date(1748811600000)\\/","LINE":"34A","PASSENGERS":"126385"},
+        {"DAY":"\\/Date(1748811600000)\\/","LINE":"500T","PASSENGERS":"31175"},
+        {"DAY":"\\/Date(1748811600000)\\/","LINE":"null","PASSENGERS":"30093"},
     ]
 
     departure_count_day.print_elements(input)
     captured = capsys.readouterr()
 
     expected_output = str(
-        "\nGün: 2025-06-02\n" +
-        "Hat: 34\n" + 
-        "Yolculuk: 687300\n\n" + 
+        "\nDay: 2025-06-02\n" +
+        "Line: 34\n" + 
+        "Passengers: 687300\n\n" + 
         
-        "Gün: 2025-06-02\n" +
-        "Hat: 34A\n" + 
-        "Yolculuk: 126385\n\n" + 
+        "Day: 2025-06-02\n" +
+        "Line: 34A\n" + 
+        "Passengers: 126385\n\n" + 
         
-        "Gün: 2025-06-02\n" +
-        "Hat: 500T\n" + 
-        "Yolculuk: 31175\n\n" + 
+        "Day: 2025-06-02\n" +
+        "Line: 500T\n" + 
+        "Passengers: 31175\n\n" + 
                 
-        "Gün: 2025-06-02\n" +
-        "Hat: null\n" + 
-        "Yolculuk: 30093\n\n" 
+        "Day: 2025-06-02\n" +
+        "Line: null\n" + 
+        "Passengers: 30093\n\n" 
     )
 
     assert captured.out == expected_output

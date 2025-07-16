@@ -6,35 +6,40 @@ import zeep
 import sys
 import lxml
 
-import utils.functions
+from utils.functions import special_char_upper_func, convert_etree_tags_to_english
+wsdl = "xml/line_service.xml"
+
+stop_info_key_dict = {"HATKODU": "LINE_CODE", "YON": "DIRECTION", "YON_ADI": "DIRECTION_NAME", "SIRANO": "QUEUE_NUMBER", "DURAKKODU": "STOP_CODE",
+                      "DURAKADI": "STOP_NAME", "XKOORDINATI": "X_COORDINATE", "YKOORDINATI":"Y_COORDINATE", 
+                      "DURAKTIPI": "STOP_TYPE", "ISLETMEBOLGE": "SERVICE_REGION", "ISLETMEALTBOLGE": "SERVICE_SUBREGION", "ILCEADI": "DISTRICT_NAME"}
 
 def take_inputs(): # For handling I/O
-    line_code = utils.functions.special_char_upper_func(input("Hat kodu giriniz / Enter bus code: "))
+    line_code = special_char_upper_func(input("Enter bus line code: "))
     
     if line_code == "":
-        raise ValueError("Hat kodu boş bırakılamaz / Bus code cannot be left empty")
+        raise ValueError("Bus line code cannot be left empty")
     
-    direction_choice = utils.functions.special_char_upper_func(input("Gitmek istediğiniz yönü giriniz (tüm yönler için boş bırakın) / Enter direction you would like to go (for all directions leave empty): "))
+    direction_choice = special_char_upper_func(input("Enter direction you would like to go (for all directions leave empty): "))
 
-    print("1 - Durak listele\n2 - Durak ara")
-    choice = input("Tercih giriniz / Enter choice: ")
+    print("1 - List stops\n2 - Search for a stop")
+    choice = input("Enter choice: ")
 
     if choice not in ["1", "2"]:
-        raise ValueError("Hatalı tercih / Invalid choice")
+        raise ValueError("Invalid choice")
     
     stop_name = ""
     if choice == "2":
-        stop_name = utils.functions.special_char_upper_func(input("Durak adı giriniz / Enter stop name: "))
+        stop_name = special_char_upper_func(input("Enter stop name: "))
 
-    IO_Dict = {"Line Code": line_code, "Direction": direction_choice, "Choice": choice, "Stop": stop_name}
+    IO_Dict = {"Line_Code": line_code, "Direction": direction_choice, "Choice": choice, "Stop": stop_name}
     return IO_Dict
 
-def soap_call(hat_kodu, wsdl):
+def soap_call(line_code, wsdl):
     client = zeep.Client(wsdl=wsdl)
-    root = client.service.DurakDetay_GYY_wYonAdi(hat_kodu)
+    root = client.service.DurakDetay_GYY_wYonAdi(line_code)
 
     if len(root) == 0:
-        print("Hat bulunamadı / Bus line not found")
+        print("Bus line not found")
         exit()
     return root
 
@@ -59,32 +64,32 @@ def parse_soap_response(inputs, root):
                 if inputs["Direction"] in table[2].text and inputs["Stop"] in table[5].text:
                     outp_buffer.append(table)
     else:
-        raise ValueError("Hatalı tercih / Invalid choice")
+        raise ValueError("Invalid choice")
     
     if len(outp_buffer) == 0: # I prefer not raising exceptions for this case, this can be a totally valid case.
-        print("Durak bulunamadı / No stop found")
-        exit(1)
+        print("No stop(s) found")
+        exit()
 
     return outp_buffer
 
-def print_xml_tree_tables(input_tree):
+def print_stops(stop_dictionary_list):
     print() # for better styling
-    for table in input_tree:
-        for element in table.iterchildren():
-            print(element.tag, ":", element.text) # display the elements in current table
+    for stop in stop_dictionary_list:
+        for key, value in stop.items():
+            print(f"{key}: {value}")
         print()
 
 def main():
     try:
-        wsdl = "xml/durak_hat_bilgi.xml"
-
         inputs = take_inputs()
         
-        root = soap_call(inputs["Line Code"], wsdl)
+        root = soap_call(inputs["Line_Code"], wsdl)
 
-        outp_buffer = parse_soap_response(inputs, root)
-        
-        print_xml_tree_tables(outp_buffer)
+        stop_results = parse_soap_response(inputs, root)
+
+        stop_results_formatted = convert_etree_tags_to_english(stop_results, stop_info_key_dict)
+
+        print_stops(stop_results_formatted)
 
     except ValueError as val_exc:
         print("Value error exception occurred:", val_exc)

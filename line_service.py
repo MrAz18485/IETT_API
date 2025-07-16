@@ -3,12 +3,13 @@
 import zeep
 import json
 import lxml.etree
-import utils.functions
+from utils.functions import special_char_upper_func, convert_etree_tags_to_english
+wsdl = "xml/line_service.xml"
 
-wsdl = "xml/durak_hat_bilgi.xml"
+line_service_tag_dict = {"HAT_KODU": "LINE_CODE", "HAT_ADI": "LINE_NAME", "TAM_HAT_ADI": "FULL_LINE_NAME", "HAT_DURUMU": "LINE_STATUS", "BOLGE": "ZONE", "SEFER_SURESI": "TRAVEL_TIME"}
 
 def take_line_code(line_code_input):
-    line_code = utils.functions.special_char_upper_func(line_code_input)
+    line_code = special_char_upper_func(line_code_input)
     return line_code
 
 def soap_call(line_code):
@@ -16,22 +17,25 @@ def soap_call(line_code):
     line_service_response = client.service.HatServisi_GYY(line_code) # returns lxml.etree._Element
 
     if len(line_service_response) == 0:
-        print("Hat bulunamadı / Bus line not found")
+        print("Bus line not found")
         exit()
     return line_service_response
 
-def print_etree(input_lxml_etree):
-    for table in input_lxml_etree:
+def print_elements(buffer):
+    for table in buffer:
         print()
-        for element in table:
-            print(element.tag, ":", element.text)
+        for key, value in table.items():
+            print(f"{key}: {value}")
 
 def main():
     try:
-        line_code = take_line_code(input("Hat kodu giriniz (tüm hatlar için boş bırakın) / Enter bus line code (leave empty for all lines): "))
+        line_code = take_line_code(input("Enter bus line code (leave empty for all lines): "))
+        
         line_service_response = soap_call(line_code)
         
-        print_etree(line_service_response)
+        line_service_list = convert_etree_tags_to_english(line_service_response, line_service_tag_dict)
+        
+        print_elements(line_service_list)
     except ValueError as val_error_exc:
         print(val_error_exc)
 
