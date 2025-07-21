@@ -1,5 +1,6 @@
 import pytest
 import sys
+from lxml import etree
 
 sys.path.append("/home/lolundcmd/Desktop/IETT_API_Tools")
 
@@ -138,3 +139,28 @@ def test_change_tags_to_english_invalid_element_input():
         output = convert_dict_keys_to_english(input, keys_dictionary)
     expected_exception_message = "Matching key not found! This shouldn't have happened, there could be an issue with SOAP response, or dictionary passed as parameter."
     assert key_exc.match(expected_exception_message)
+
+class etree_element_with_text(etree.ElementBase): # extending etree._Element class
+    # we defined a __init__ method here, now the __init__ method of parent class
+    # will not be invoked. So we should call __init__ of parent class here explicitly.
+    etree.Element()
+    # It turns out we shouldn't override __init__ method (suggested by docs of lxml)
+    def _init(self, text=None):
+        if text:
+            self.text = text
+     
+def test_etree_constructor_single_table():
+    input = [{"LINE_CODE": "KM18", "LINE_NAME": "SABANCI ÜNİ./MEDENİYET ÜNİ. - KURTKÖY METRO", 
+            "FULL_LINE_NAME": "SABANCI ÜNİ./MEDENİYET ÜNİ. - KURTKÖY METRO", "LINE_STATUS": "1", "REGION": "Anadolu2",
+            "TRAVEL_TIME": "71.04"}]
+    output = etree_constructor(input)
+
+    expected_output = etree.Element("NewDataSet")
+    expected_output.append(etree.Element("Table"))
+    expected_output[0].append(etree_element_with_text(tag="LINE_CODE", text="KM18"))
+    expected_output[0].append(etree_element_with_text(tag="LINE_NAME", text="SABANCI ÜNİ./MEDENİYET ÜNİ. - KURTKÖY METRO"))
+    expected_output[0].append(etree_element_with_text(tag="FULL_LINE_NAME", text="SABANCI ÜNİ./MEDENİYET ÜNİ. - KURTKÖY METRO"))
+    expected_output[0].append(etree_element_with_text(tag="LINE_STATUS", text="1"))
+    expected_output[0].append(etree_element_with_text(tag="REGION", text="Anadolu2"))
+    expected_output[0].append(etree_element_with_text(tag="TRAVEL_TIME", text="71.04"))
+    assert etree.tostring(output) == etree.tostring(expected_output)

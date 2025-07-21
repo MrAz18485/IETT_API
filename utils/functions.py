@@ -63,3 +63,4 @@ def etree_constructor(tables): # helper for methods below.
             root_elem[curr_table_index].append(element)
         curr_table_index += 1
     return root_elem
+

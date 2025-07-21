@@ -5,7 +5,6 @@ import zeep
 from datetime import date
 from lxml import etree
 import zeep.exceptions
-import timeit
 
 sys.path.append("/home/lolundcmd/Desktop/IETT_API_Tools")
 

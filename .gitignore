@@ -6,4 +6,3 @@ temp_output.txt
 __pycache__/
 .pytest_cache/
 TODO.txt
-get_crash_info.py

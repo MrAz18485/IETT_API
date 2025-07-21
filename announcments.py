@@ -3,7 +3,7 @@
 import zeep
 import json
 import os
-from utils.functions import special_char_upper_func, replace_keyword
+from utils.functions import special_char_upper_func, replace_keyword, etree_element_with_text
 
 wsdl = "https://api.ibb.gov.tr/iett/UlasimDinamikVeri/Duyurular.asmx?wsdl"
 
@@ -56,6 +56,7 @@ def main():
 
         print_elements(specific_announcments)
 
+        print(etree_element_with_text(tag="LINE_CODE", text="KM18"))
     except IndexError as index_exc:
         print("Index error when iterating/doing something a list:", index_exc)
 
